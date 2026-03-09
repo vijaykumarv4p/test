@@ -7,15 +7,18 @@ const {
   updateUser,
   patchUser,
   createUser,
-  checkUserBody,
   deleteUser,
 } = require('../controller/userController');
-router.route('/').get(getAllUser).post(checkUserBody, createUser);
+router.route('/').get(getAllUser).post(createUser);
 router
   .route('/:id')
   .get(getUser)
   .put(updateUser)
   .patch(patchUser)
   .delete(deleteUser);
+
+router.post('/bulk-upload', (req, res) => {
+  res.json({ message: 'Data received' });
+});
 
 module.exports = router;

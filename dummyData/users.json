@@ -1,0 +1,27 @@
+[ {
+    "email": "user1@example.com",
+    "panNumber": "ABCDE1001F",
+    "firstName": "User1",
+    "lastName": "Test",
+    "password": "password123",
+    "role": "manager",
+    "employeeId": "EMP1001",
+    "department": "Finance",
+    "status": true,
+    "image": "user1.png",
+    "dateOfBirth": "1991-02-01"
+  },
+  {
+    "email": "user2@example.com",
+    "panNumber": "ABCDE1002F",
+    "firstName": "User2",
+    "lastName": "Test",
+    "password": "password123",
+    "role": "admin",
+    "employeeId": "EMP1002",
+    "department": "HR",
+    "status": true,
+    "image": "user2.png",
+    "dateOfBirth": "1992-03-01"
+  }
+]
