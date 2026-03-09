@@ -6,12 +6,11 @@ const {
   patchTour,
   createTour,
   getAllTours,
-  validateId,
   checkTourBody,
 } = require('../controller/toursController');
 const router = express.Router();
 
-router.param('id', validateId);
+// router.param('id', validateId);
 router.route('/').get(getAllTours).post(checkTourBody, createTour);
 router
   .route('/:id')

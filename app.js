@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 const express = require('express');
 const mongoose = require('mongoose');
 let toursRouter = require('./routers/toursRouter');
-
+let userRouter = require('./routers/userRouter');
 dotenv.config({ path: './config.env' });
 mongoose.set('debug', true);
 const port = process.env.PORT;
@@ -24,25 +24,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use('/api/v1/tours', toursRouter);
+app.use('/api/v1/users', userRouter);
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-// test mongodb
-
-// const userSchema = mongoose.Schema({
-//   userName: {
-//     type: String,
-//     unique: true,
-//     required: [true, 'User name is required'],
-//   },
-//   password: {
-//     type: String,
-//     required: [true, 'Password is required'],
-//   },
-// });
-
-// const user = mongoose.model('User', userSchema);
 // const newUser = new user({
 //   userName: 'vijay',
 //   password: 'mypassword',
