@@ -11,6 +11,16 @@ exports.validateId = (req, res, next, idValue) => {
   console.log(' tour id ', idValue);
   next();
 };
+
+exports.checkTourBody = (req, res, next) => {
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      message: 'Invalid request : Name or Price missing ',
+      data: {},
+    });
+  }
+  next();
+};
 exports.getAllTours = (req, res) => {
   res.status(200).json({
     message: 'Success',

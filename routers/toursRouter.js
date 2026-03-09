@@ -7,11 +7,12 @@ const {
   createTour,
   getAllTours,
   validateId,
-} = require('../dev-data/controller/toursController');
+  checkTourBody,
+} = require('../controller/toursController');
 const router = express.Router();
 
 router.param('id', validateId);
-router.route('/').get(getAllTours).post(createTour);
+router.route('/').get(getAllTours).post(checkTourBody, createTour);
 router
   .route('/:id')
   .get(getTour)
