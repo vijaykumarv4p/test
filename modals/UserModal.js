@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema(
       type: String,
       unique: true,
       required: [true, 'PAN Number is required'],
-      lowercase: true,
+      // lowercase: true,
       trim: true,
     },
     firstName: {

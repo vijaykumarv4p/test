@@ -1,9 +1,9 @@
 const dotenv = require('dotenv');
 const express = require('express');
 const mongoose = require('mongoose');
+dotenv.config({ path: './config.env' });
 let toursRouter = require('./routers/toursRouter');
 let userRouter = require('./routers/userRouter');
-dotenv.config({ path: './config.env' });
 mongoose.set('debug', true);
 const port = process.env.PORT;
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DBPASSWORD);
@@ -11,7 +11,7 @@ const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DBPASSWORD);
 const connectDB = async () => {
   try {
     const res = await mongoose.connect(DB, {});
-    console.error('DB Connected to:', res.connection.host);
+    console.error('DB Connected to :', res.connection.host);
   } catch (error) {
     console.error('DB Connection error : ', error.message);
   }

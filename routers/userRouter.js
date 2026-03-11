@@ -8,8 +8,11 @@ const {
   patchUser,
   createUser,
   deleteUser,
+  getNewUsers,
 } = require('../controller/userController');
 router.route('/').get(getAllUser).post(createUser);
+router.route('/latest').get(getNewUsers, getAllUser);
+
 router
   .route('/:id')
   .get(getUser)

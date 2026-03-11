@@ -1,12 +1,32 @@
-const user = require('../modals/UserModal');
 const User = require('../modals/UserModal');
+const APIfeatures = require('../utils/apiFeatures');
+exports.getNewUsers = (req, res, next) => {
+  req.query.sort = 'createdAt:desc';
+  req.query.limit = 5;
+  req.query.fields = 'firstName,lastName,email,panNumber,createdAt';
+  req.query.page = 1;
+  res.locals.endpoint = 'latestUsers';
+
+  next();
+};
 
 exports.getAllUser = async (req, res) => {
   try {
-    const users = await User.find({});
+    let queryParams = req.query;
+    const features = new APIfeatures(User.find({}), req.query);
+    features.filter();
+    let total = await User.countDocuments(features.query);
+    features.sort().limitFields().paginate();
+    const users = await features.query.exec();
+
+    if (res.locals.endpoint === 'latestUsers') {
+      return res.json({
+        data: { users },
+      });
+    }
     res.status(200).json({
       message: 'Success',
-      data: { users, total: users.length },
+      data: { total, users },
     });
   } catch (error) {
     console.log(error);
@@ -113,7 +133,7 @@ exports.bulkUpload = async (req, res) => {
   try {
     let updatedUser = await User.findByIdAndDelete(req.params.id);
     res.status(200).json({
-      message: 'User deletedsuccessfully',
+      message: 'User deleted successfully',
       info: { updatedUser },
     });
   } catch (error) {
