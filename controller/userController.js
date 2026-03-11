@@ -1,5 +1,7 @@
-const User = require('../modals/UserModal');
+const User = require('../models/UserModel');
 const APIfeatures = require('../utils/apiFeatures');
+const asyncHandler = require('../utils/asyncHandler');
+
 exports.getNewUsers = (req, res, next) => {
   req.query.sort = 'createdAt:desc';
   req.query.limit = 5;
@@ -10,31 +12,23 @@ exports.getNewUsers = (req, res, next) => {
   next();
 };
 
-exports.getAllUser = async (req, res) => {
-  try {
-    let queryParams = req.query;
-    const features = new APIfeatures(User.find({}), req.query);
-    features.filter();
-    let total = await User.countDocuments(features.query);
-    features.sort().limitFields().paginate();
-    const users = await features.query.exec();
+exports.getAllUser = asyncHandler(async (req, res, next) => {
+  const features = new APIfeatures(User.find({}), req.query);
+  features.filter();
+  let total = await User.countDocuments(features.query);
+  features.sort().limitFields().paginate();
+  const users = await features.query.exec();
 
-    if (res.locals.endpoint === 'latestUsers') {
-      return res.json({
-        data: { users },
-      });
-    }
-    res.status(200).json({
-      message: 'Success',
-      data: { total, users },
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: error.message ?? 'Something went wrong ',
+  if (res.locals.endpoint === 'latestUsers') {
+    return res.status(200).json({
+      data: { users },
     });
   }
-};
+  res.status(200).json({
+    message: 'Success',
+    data: { total, users },
+  });
+});
 exports.createUser = async (req, res) => {
   try {
     const existingUser = await User.findOne({ email: req.body.email });
@@ -44,7 +38,7 @@ exports.createUser = async (req, res) => {
       });
     }
 
-    // let user = new userModal(req.body);
+    // let user = new userModel(req.body);
     // let createdUser = await user.save();
     // console.log(req.bady);
     let user = await User.create(req.body);
@@ -65,38 +59,24 @@ exports.createUser = async (req, res) => {
     });
   }
 };
-exports.getUser = async (req, res) => {
-  try {
-    const user = await User.findById(String(req.params.id));
-    res.status(200).json({
-      message: 'Success',
-      data: { user },
-    });
-  } catch (error) {
-    res.status(404).json({
-      message: 'Something went wrong ',
-      info: error.message,
-    });
-  }
-  // const id = Number(req.params.id);{ id:
-};
+exports.getUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(String(req.params.id));
+  res.status(200).json({
+    message: 'Success',
+    data: { user },
+  });
+});
 
-exports.updateUser = async (req, res) => {
-  try {
-    let updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.status(200).json({
-      message: 'Success',
-      data: { updatedUser },
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: 'Something went wrong ',
-      info: error.message,
-    });
-  }
-};
+exports.updateUser = asyncHandler(async (req, res) => {
+  let updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.status(200).json({
+    message: 'Success',
+    data: { updatedUser },
+  });
+});
+
 exports.patchUser = async (req, res) => {
   try {
     let updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {

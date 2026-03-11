@@ -1,4 +1,4 @@
-const Tour = require('../modals/TourModel');
+const Tour = require('../models/TourModel');
 const TourAPIFeatures = require('./../utils/tourApiFeatures');
 
 exports.aliasTopTours = (req, res, next) => {
