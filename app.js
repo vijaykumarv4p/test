@@ -1,10 +1,14 @@
 const dotenv = require('dotenv');
 const express = require('express');
 const mongoose = require('mongoose');
+const AppError = require('./utils/appError');
+const globalErrorHandler = require('./controller/errorController');
+const cookieParser = require('cookie-parser');
 dotenv.config({ path: './config.env' });
-let toursRouter = require('./routers/toursRouter');
-let userRouter = require('./routers/userRouter');
-mongoose.set('debug', true);
+const toursRouter = require('./routers/toursRouter');
+const userRouter = require('./routers/userRouter');
+const authRouter = require('./routers/authRouter');
+// mongoose.set('debug', true);
 const port = process.env.PORT;
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DBPASSWORD);
 
@@ -19,11 +23,12 @@ const connectDB = async () => {
 connectDB();
 
 const app = express();
-const AppError = require('./utils/appError');
-const globalErrorHandler = require('./controller/errorController');
+app.use(cookieParser());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', userRouter);
 app.use((req, res, next) => {

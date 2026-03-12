@@ -75,16 +75,18 @@ class APIfeatures {
   }
   limitFields() {
     let queryParams = { ...this.queryString };
+
     if (queryParams.fields) {
       const fields = queryParams.fields
         .split(',')
         .filter((field) => field.trim() !== 'password');
       this.query.select(fields);
     } else {
-      // query = query.select('-image -password');
-      this.query.select({ password: 0, image: 0 });
+      this.query.select({
+        password: 0,
+        __v: 0,
+      });
     }
-
     return this;
   }
   paginate() {

@@ -1,4 +1,4 @@
-const User = require('../models/UserModel');
+const User = require('../models/userModel');
 const APIfeatures = require('../utils/apiFeatures');
 const asyncHandler = require('../utils/asyncHandler');
 
@@ -14,7 +14,7 @@ exports.getNewUsers = (req, res, next) => {
 
 exports.getAllUser = asyncHandler(async (req, res, next) => {
   const features = new APIfeatures(User.find({}), req.query);
-  features.filter();
+
   let total = await User.countDocuments(features.query);
   features.sort().limitFields().paginate();
   const users = await features.query.exec();
@@ -31,12 +31,12 @@ exports.getAllUser = asyncHandler(async (req, res, next) => {
 });
 exports.createUser = async (req, res) => {
   try {
-    const existingUser = await User.findOne({ email: req.body.email });
-    if (existingUser) {
-      return res.status(400).json({
-        message: 'Email already exists\n,Please try to login ',
-      });
-    }
+    // const existingUser = await User.findOne({ email: req.body.email });
+    // if (existingUser) {
+    //   return res.status(400).json({
+    //     message: 'Email already exists\n,Please try to login ',
+    //   });
+    // }
 
     // let user = new userModel(req.body);
     // let createdUser = await user.save();
@@ -60,7 +60,14 @@ exports.createUser = async (req, res) => {
   }
 };
 exports.getUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(String(req.params.id));
+  let query = User.findById(String(req.params.id));
+
+  const features = new APIfeatures(query, {});
+  features.limitFields();
+  const user = await features.query.exec();
+
+  //  await User.findById(String(req.params.id));
+
   res.status(200).json({
     message: 'Success',
     data: { user },
