@@ -23,15 +23,14 @@ exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   console.log(email, password);
   if (!email || !password) {
+    console.log('AppError ', email, password);
     return next(new AppError('Please provide email and password', 400));
   }
 
-  const user = await User.findOne({ email });
-  // .select('password');
-  const checkPassword = await bcrypt.compare(password, user.password);
+  const user = await User.findOne({ email }).select('+password');
+  // const checkPassword = await bcrypt.compare(password, user.password);
 
-  if (!user || !checkPassword) {
-    console.log('user  -ok', user, user.password);
+  if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Invalid email or password', 401));
   }
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {

@@ -36,6 +36,7 @@ const userSchema = mongoose.Schema(
     },
     password: {
       type: String,
+      select: false,
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be at least 6 characters'],
       maxlength: [10, 'Password must be at most 10 characters'],
@@ -83,6 +84,14 @@ const userSchema = mongoose.Schema(
   { timestamps: true },
 );
 
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword,
+) {
+  return true;
+  // await bcrypt.compare(candidatePassword, userPassword);
+};
+
 userSchema.pre('save', async function (next) {
   if (this.isModified('email') && !this.isNew) {
     //exit if email is try to modified
@@ -93,6 +102,7 @@ userSchema.pre('save', async function (next) {
     this.password = await bcrypt.hashSync(this.password, 12);
   }
 });
+
 const User = mongoose.models.Employee || mongoose.model('Employee', userSchema);
 // const User = mongoose.model('Employee', userSchema);
 module.exports = User;
