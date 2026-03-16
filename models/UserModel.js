@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const ms = require('ms');
 const userSchema = mongoose.Schema(
   {
     email: {
@@ -68,6 +70,15 @@ const userSchema = mongoose.Schema(
       default: true,
     },
     image: String,
+    isDeleted: {
+      type: Boolean,
+      default: false,
+      select: false,
+    },
+    deletedAt: {
+      type: Date,
+      select: false,
+    },
     dateOfBirth: {
       type: Date,
       validate: {
@@ -80,7 +91,11 @@ const userSchema = mongoose.Schema(
         message: 'User must be at least 18 years old',
       },
     },
+    passwordResetToken: String,
+    passwordChangedAt: Date,
+    passwordResetExpires: Date,
   },
+
   { timestamps: true },
 );
 
@@ -88,18 +103,50 @@ userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword,
 ) {
-  return true;
-  // await bcrypt.compare(candidatePassword, userPassword);
+  return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+userSchema.methods.generateResetToken = async function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = new Date(
+    Date.now() + ms(process.env.RESTORE_PASSWORD_TOKEN_EXPIRES_IN),
+  );
+
+  return resetToken;
+};
+
+userSchema.pre([/^find/, 'countDocuments'], function (next) {
+  this.where({ status: true });
+  this.select('-__v -createdAt -updatedAt');
+});
+
+// userSchema.pre(/^find/, function (next) {
+//   this.where({ status: true });
+//   // here no need to add the password fileds since its automatically excluded by select: false in the schema definition
+//   // only available when we explicitly select it in the query
+
+// });
 
 userSchema.pre('save', async function (next) {
   if (this.isModified('email') && !this.isNew) {
     //exit if email is try to modified
-    next(new Error('Email cannot be modified/not allowed '));
+    next(new Error('Email cannot be modifi  ed/not allowed '));
   }
   if (this.isModified('password') || this.isNew) {
     // has the password or encrypt the password here
     this.password = await bcrypt.hashSync(this.password, 12);
+  }
+  // next();
+});
+userSchema.pre('save', function (next) {
+  if (this.isModified('password') && !this.isNew) {
+    this.passwordChangedAt = Date.now() - 1000;
   }
 });
 

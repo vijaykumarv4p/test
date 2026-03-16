@@ -18,12 +18,15 @@ const handleValidationErrorDB = (err) => {
 };
 
 const JWTError = (type) => {
+  // if 403 then force logout
   if (type === 'JsonWebTokenError') {
-    return new AppError('Invalid token. Please log in again!', 401);
+    // clear cookies
+    return new AppError('Invalid token. Please log in again!', 403);
   } else if (type === 'TokenExpiredError') {
     return new AppError('Your token has expired! Please log in again.', 401);
   } else {
-    return new AppError('unknown error accoured . Please log in again!', 401);
+    //clear cookies
+    return new AppError('unknown error occurred . Please log in again!', 401);
   }
 };
 const sendError = (err, res) => {
@@ -37,7 +40,7 @@ const sendError = (err, res) => {
       status: 'error',
       message: 'Something went very wrong!',
       error: err,
-      stack: err.stack,// remove latter;  
+      stack: err.stack, // remove latter;
     });
   }
 };

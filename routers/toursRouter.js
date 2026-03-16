@@ -22,7 +22,7 @@
 // module.exports = router;
 const express = require('express');
 const tourController = require('./../controller/toursController');
-
+const { isAuthenticated } = require('../controller/authenticateController');
 const router = express.Router();
 
 // router.param('id', tourController.checkID);
@@ -36,8 +36,8 @@ router
 
 router
   .route('/')
-  .get(tourController.getAllTours)
-  .post(tourController.createTour);
+  .get(isAuthenticated, tourController.getAllTours)
+  .post(isAuthenticated, tourController.createTour);
 
 router
   .route('/:id')

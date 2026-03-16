@@ -8,7 +8,10 @@ dotenv.config({ path: './config.env' });
 const toursRouter = require('./routers/toursRouter');
 const userRouter = require('./routers/userRouter');
 const authRouter = require('./routers/authRouter');
-// mongoose.set('debug', true);
+const helmate = require('helmet');
+
+const hpp = require('hpp');
+
 const port = process.env.PORT;
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DBPASSWORD);
 
@@ -23,11 +26,21 @@ const connectDB = async () => {
 connectDB();
 
 const app = express();
-app.use(cookieParser());
 
-app.use(express.json());
+app.use(helmate());
+
+app.use(cookieParser());
+app.use(hpp({ whitelist: [] }));
+app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+const rateLimit = require('express-rate-limit');
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP, please try again in an hour!',
+});
+app.use('/api', limiter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', userRouter);
