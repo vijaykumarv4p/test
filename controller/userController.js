@@ -17,6 +17,7 @@ exports.getNewUsers = (req, res, next) => {
 
 exports.getAllUser = asyncHandler(async (req, res, next) => {
   const features = new APIfeatures(User.find({}), req.query);
+  features.filter();
   let total = await User.countDocuments(features.query);
   features.sort().limitFields().paginate();
   const users = await features.query.exec();

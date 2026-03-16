@@ -17,5 +17,5 @@ exports.xssSanitizer = (req, res, next) => {
   sanitize(req?.query);
   sanitize(req?.params);
 
-  // next();
+  next();
 };

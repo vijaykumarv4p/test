@@ -20,12 +20,12 @@ const handleValidationErrorDB = (err) => {
 const JWTError = (type) => {
   // if 403 then force logout
   if (type === 'JsonWebTokenError') {
-    // clear cookies
+    // clear cookies if using cookies for storing token
     return new AppError('Invalid token. Please log in again!', 403);
   } else if (type === 'TokenExpiredError') {
     return new AppError('Your token has expired! Please log in again.', 401);
   } else {
-    //clear cookies
+    // clear cookies if using cookies for storing token
     return new AppError('unknown error occurred . Please log in again!', 401);
   }
 };
@@ -57,3 +57,23 @@ module.exports = (error, req, res, next) => {
 
   sendError(error, res);
 };
+
+// CastError its id error
+// ValidationError is for validation error
+// 11000 MongoError: Duplicate key error is for unique field duplicate error
+// JsonWebTokenError is for invalid token error
+// TokenExpiredError is for expired token error
+// 11000 is for duplicate key error code
+// 404 is for not found error
+// 400 is for bad request error
+// 401 is for unauthorized error
+// 403 is for forbidden error
+// 500 is for internal server error
+// 200 is for success
+// 201 is for created
+// 204 is for no content
+// 400 is for bad request error
+// 401 is for unauthorized error
+// 403 is for forbidden error
+// 404 is for not found error
+// 500 is for internal server error
