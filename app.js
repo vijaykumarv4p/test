@@ -1,13 +1,15 @@
 const dotenv = require('dotenv');
+dotenv.config({ path: './config.env' });
 const express = require('express');
 const mongoose = require('mongoose');
-const AppError = require('./utils/appError');
+// const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controller/errorController');
 const cookieParser = require('cookie-parser');
 
 const toursRouter = require('./routers/toursRouter');
 const userRouter = require('./routers/userRouter');
 const authRouter = require('./routers/authRouter');
+const uploadRouter = require('./routers/uploadRouter');
 const { unknownRoute } = require('./routers/unknownRouter');
 const helmet = require('helmet');
 const { xssSanitizer } = require('./middleware/xssSanitizer');
@@ -19,7 +21,7 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this IP, please try again in an hour!',
 });
-dotenv.config({ path: './config.env' });
+
 const port = process.env.PORT;
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DBPASSWORD);
 
@@ -47,7 +49,7 @@ app.use('/api', limiter); // limit requests from same API
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', userRouter);
-
+app.use('/api/v1/upload', uploadRouter);
 app.use(unknownRoute);
 
 app.use(globalErrorHandler);
