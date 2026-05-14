@@ -59,6 +59,10 @@ app.use('/api/v1/tours', toursRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/upload', uploadRouter);
 app.use('/api/v1/video', commanRouter);
+app.use('/api/v1/test', (req, res) => {
+  res.json({ message: 'Test route is working' });
+});
+
 app.use(unknownRoute);
 
 app.use(globalErrorHandler);
